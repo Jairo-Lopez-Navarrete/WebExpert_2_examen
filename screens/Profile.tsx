@@ -7,7 +7,7 @@ import {AuthContext} from '../helpers/AuthProvider';
 
 export default function Profile() {
     const {user, logout} = useContext(AuthContext);
-    //const navigation = useNavigation();
+    const navigation = useNavigation();
     const [savedBooks, setSavedBooks] = useState([]);
     
     useEffect(() => {
