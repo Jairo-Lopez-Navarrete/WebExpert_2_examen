@@ -47,7 +47,7 @@ export default function Books(){
 
     const foryouBooks = [
         {
-            id: 6,
+            id: 1,
             name: 'Between Two Fires',
             author: 'Christopher Buehlman',
             description: 'Set during the Black Death, it follows a disgraced knight and a mysterious young girl who travel across France, as Lucifer and other fallen angels start another war with Heaven.',

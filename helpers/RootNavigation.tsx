@@ -8,6 +8,7 @@ type Routes = {
     'Profile': string;
     'Settings': string;
     'Books': string;
+    'EditProfile': string;
 };
 
 //wat het doet: waar zit ik op en waar wil ik naar toe gaan.

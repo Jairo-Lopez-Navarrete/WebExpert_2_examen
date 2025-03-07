@@ -1,25 +1,57 @@
-import React from 'react';
-import { View, Image, StyleSheet, Text, Pressable, ScrollView } from 'react-native';
+import React, {useState, useEffect} from 'react';
+import { View, Image, StyleSheet, Text, Pressable, ScrollView, Alert } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import { useNavigation } from '@react-navigation/native';
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function DetailScreen({ route }) {
-    const { detail } = route.params; // Haalt de game afbeelding op uit de navigatie
+    const { detail } = route.params; // Haalt het boek op
+    const [isSaved, setIsSaved] = useState(false);
+
+    useEffect(() => {
+        const checkIfSaved = async () => {
+            try {
+                const storedBooks = await AsyncStorage.getItem('savedBooks');
+                const savedBooks = storedBooks ? JSON.parse(storedBooks) : [];
+                const bookExists = savedBooks.some(book => book.id === detail.id);
+                setIsSaved(bookExists);
+            } catch (error) {
+                console.error('Fout bij ophalen van opgeslagen boeken:', error);
+            }
+        };
+        checkIfSaved();
+    }, []);
+
+
+    const saveBookToProfile = async () => {
+        try {
+            // Haal de bestaande boeken op
+            const storedBooks = await AsyncStorage.getItem('savedBooks');
+            let savedBooks = storedBooks ? JSON.parse(storedBooks) : [];
+
+            // Controleer of het boek al is toegevoegd
+            if (!isSaved) {
+                savedBooks.push(detail);
+                await AsyncStorage.setItem('savedBooks', JSON.stringify(savedBooks));
+                setIsSaved(true);
+            }
+        } catch (error) {
+            console.error('Fout bij opslaan van boek:', error);
+        }
+    };
 
     return (
         <ScrollView style={styles.scroll}>
-             <View style={styles.container}>
-            <Image source={detail.image} style={styles.image} />
-            <View style={styles.textContainer}>
-            <Text style={styles.title}> {detail.name} </Text>
-            <Text style={styles.authorText}>{detail.author}</Text>
-            <Pressable onPress={() => navigate('Profile')} style={styles.button}>
-                <Text style={styles.buttonText}>Voeg toe</Text>
-                <Ionicons name="add" style={styles.buttonIcon}/>
-            </Pressable>
-            <Text style={styles.description}>{detail.description}</Text>
-            </View>
+            <View style={styles.container}>
+                <Image source={detail.image} style={styles.image} />
+                <View style={styles.textContainer}>
+                    <Text style={styles.title}>{detail.name}</Text>
+                    <Text style={styles.authorText}>{detail.author}</Text>
+                    <Pressable onPress={saveBookToProfile} style={styles.button}>
+                        <Text style={styles.buttonText}>{isSaved ? 'Opgeslagen' : 'Voeg toe'}</Text>
+                        <Ionicons name={isSaved ? 'checkmark' : 'add'} style={styles.buttonIcon} />
+                    </Pressable>
+                    <Text style={styles.description}>{detail.description}</Text>
+                </View>
             </View>
         </ScrollView>
     );
@@ -32,7 +64,6 @@ const styles = StyleSheet.create({
     },
     container: {
         flex: 1,
-        padding: 0,
         alignItems: 'center',
         backgroundColor: '#fff',
     },
@@ -42,14 +73,9 @@ const styles = StyleSheet.create({
         borderRadius: 15,
         marginTop: 20,
         marginBottom: 40,
-        shadowColor: '#000', // Zwarte schaduw
-        shadowOffset: { width: 0, height: 4 }, // Schaduwpositie
-        shadowOpacity: 0.5, // Transparantie
-        shadowRadius: 4, // Hoe vervaagd de schaduw is
         elevation: 20,
     },
     button: {
-        display: 'flex',
         flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'center',
@@ -57,46 +83,38 @@ const styles = StyleSheet.create({
         width: 300,
         height: 70,
         padding: 10,
-        borderRadius: 10
+        borderRadius: 10,
     },
     buttonText: {
         color: '#fff',
-        fontWeight: 500,
         fontSize: 22,
-        marginRight: 2
+        marginRight: 2,
     },
     buttonIcon: {
         color: '#fff',
-        fontWeight: 700,
         fontSize: 30,
     },
     textContainer: {
-        backgroundColor: '#fff',
-        display: 'flex',
         alignItems: 'center',
         width: '100%',
         height: 300,
         padding: 20,
-        shadowColor: '#000', // Zwarte schaduw
-        shadowOffset: { width: 0, height: 4 }, // Schaduwpositie
-        shadowOpacity: 0.5, // Transparantie
-        shadowRadius: 4, // Hoe vervaagd de schaduw is
         elevation: 20,
     },
     title: {
         fontSize: 26,
-        fontWeight: 500,
-        textAlign: 'center'    
+        fontWeight: '500',
+        textAlign: 'center',
     },
     authorText: {
         fontSize: 22,
         marginTop: 10,
         marginBottom: 20,
-        textAlign: 'center'
+        textAlign: 'center',
     },
     description: {
         marginTop: 20,
         fontSize: 22,
-        textAlign: 'center' 
-    }
+        textAlign: 'center',
+    },
 });

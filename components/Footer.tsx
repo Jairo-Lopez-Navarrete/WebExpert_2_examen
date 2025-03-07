@@ -15,14 +15,14 @@ export default function Footer(){
 
     const getFooterStyle = () => {
         switch (currentRoute) {
-            case 'Games':
-                return { backgroundColor: '#88120E' };
+            case 'Books':
+                return { backgroundColor: '#BB6559' };
             case 'Explore':
-                return { backgroundColor: '#987653' };
+                return { backgroundColor: '#5C63C4' };
             case 'Profile':
-                return { backgroundColor: '#363285' };
+                return { backgroundColor: '#59BB68' };
             case 'Detail':
-                return { backgroundColor: '#E88205' };
+                return { backgroundColor: '#EC9407' };
             default:
                 return { backgroundColor: '#333' };
         }
