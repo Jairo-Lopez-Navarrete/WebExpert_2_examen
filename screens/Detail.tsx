@@ -66,6 +66,7 @@ const styles = StyleSheet.create({
         flex: 1,
         alignItems: 'center',
         backgroundColor: '#fff',
+        height: 900,
     },
     image: {
         width: 200,

@@ -1,28 +1,20 @@
 import React, { createContext, useState, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export const AuthContext = createContext();
+export const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    checkLoginStatus();
+    const loadUser = async () => {
+        const savedUser = await AsyncStorage.getItem('user');
+        if (savedUser) {
+            setUser(JSON.parse(savedUser))
+        }
+    };
+    loadUser();
   }, []);
-
-  const checkLoginStatus = async () => {
-    try {
-      const savedUser = await AsyncStorage.getItem('user');
-      if (savedUser) {
-        setUser(JSON.parse(savedUser));
-      }
-    } catch (error) {
-      console.error('Fout bij ophalen van loginstatus', error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const login = async (userData) => {
     setUser(userData);
@@ -34,8 +26,14 @@ export const AuthProvider = ({ children }) => {
     await AsyncStorage.removeItem('user');
   };
 
+  const updateUser = async (updatedUser) => {
+    setUser(updatedUser);
+    await AsyncStorage.setItem('user', JSON.stringify(updatedUser));
+  };
+
+
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout }}>
+    <AuthContext.Provider value={{ user, updateUser, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
